@@ -1,36 +1,68 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<div class="d-flex flex-column flex-shrink-0 p-3 bg-light border-end min-vh-100" style="width: 240px;">
-    <ul class="nav nav-pills flex-column mb-auto">
+<style>
+    .sidebar-wrapper {
+        background-color: #1e293b; /* Tone màu tối giống Hình 1 */
+        min-height: calc(100vh - 56px);
+        width: 100%;
+    }
+    .sidebar-nav .nav-link {
+        color: #94a3b8 !important;
+        font-weight: 500;
+        padding: 12px 20px;
+        border-radius: 0;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        transition: all 0.2s ease;
+    }
+    .sidebar-nav .nav-link:hover {
+        background-color: #334155 !important;
+        color: #ffffff !important;
+    }
+    .sidebar-nav .nav-link.active {
+        background-color: #0284c7 !important; /* Active xanh cyan nổi bật */
+        color: #ffffff !important;
+        font-weight: 600;
+    }
+</style>
+
+<div class="sidebar-wrapper py-3">
+    <ul class="nav nav-pills flex-column sidebar-nav mb-auto">
+        <!-- 1. Trang chủ -->
         <li class="nav-item">
-            <a href="NhanVienServlet" class="nav-link text-dark">
-                <i class="bi bi-people-fill me-2 text-success fs-5"></i>
-                Quản lý Nhân viên
+            <a href="Home.jsp" class="nav-link ${param.activePage == 'home' ? 'active' : ''}">
+                <i class="bi bi-house-door-fill fs-5"></i>
+                <span>Trang chủ</span>
             </a>
         </li>
-        <li class="mt-2">
-            <a href="DuAnServlet" class="nav-link active">
-                <i class="bi bi-folder-symlink-fill me-2 fs-5"></i>
-                Quản lý Dự án
+        <!-- 2. Quản lý Nhân viên -->
+        <li class="nav-item">
+            <a href="NhanVienServlet" class="nav-link ${param.activePage == 'nhanvien' ? 'active' : ''}">
+                <i class="bi bi-people-fill fs-5"></i>
+                <span>Quản lý Nhân viên</span>
             </a>
         </li>
-        <li class="mt-2">
-            <a href="CongViecServlet" class="nav-link text-dark">
-                <i class="bi bi-list-task me-2 text-info fs-5"></i>
-                Quản lý Công việc
+        <!-- 3. Quản lý Dự án -->
+        <li class="nav-item">
+            <a href="du-an" class="nav-link ${param.activePage == 'duan' ? 'active' : ''}">
+                <i class="bi bi-folder-fill fs-5"></i>
+                <span>Quản lý Dự án</span>
             </a>
         </li>
-        <li class="mt-2">
-            <a href="PhanCongServlet" class="nav-link text-dark">
-                <i class="bi bi-person-plus-fill me-2 text-danger fs-5"></i>
-                Phân công công việc
+        <!-- 4. Quản lý Công việc -->
+        <li class="nav-item">
+            <a href="CongViecServlet" class="nav-link ${param.activePage == 'congviec' ? 'active' : ''}">
+                <i class="bi bi-list-task fs-5"></i>
+                <span>Quản lý Công việc</span>
             </a>
         </li>
-        <li class="mt-2">
-            <a href="ThongKeServlet" class="nav-link text-dark">
-                <i class="bi bi-bar-chart-line-fill me-2 text-secondary fs-5"></i>
-                Thống kê tiến độ
+        <!-- 5. Phân công công việc -->
+        <li class="nav-item">
+            <a href="PhanCongServlet" class="nav-link ${param.activePage == 'phancong' ? 'active' : ''}">
+                <i class="bi bi-person-plus-fill fs-5"></i>
+                <span>Phân công công việc</span>
             </a>
         </li>
     </ul>

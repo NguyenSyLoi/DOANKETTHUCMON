@@ -16,12 +16,12 @@ import java.sql.SQLException;
 public class DBContext {
     private static final String URL 
             = "jdbc:sqlserver://PC-29\\SQLEXPRESS01:1433;" //DESKTOP-1V4LFQF\MSSQLSERVER01:1433; (server dùng ở nhà) ,//PC-34\\SQLEXPRESS01:1433;(server dùng trên lớp)
-            + "databaseName=QLBanHang;"
+            + "databaseName=QuanLyCongViec;"
             + "encrypt=true;"
             + "trustServerCertificate=true;";
 
     private static final String USER = "sa";
-    private static final String PASSWORD = "123456";
+    private static final String PASSWORD = "1234";
 
     public static Connection getConnection() {
         Connection conn = null;
