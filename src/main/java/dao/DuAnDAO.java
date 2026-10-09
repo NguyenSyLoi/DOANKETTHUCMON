@@ -5,6 +5,7 @@
 package dao;
 import context.DBContext;
 import Model.DuAn;
+import static context.DBContext.getConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,6 @@ public class DuAnDAO {
             e.printStackTrace();
         }
     }
-
     // Xóa dự án
     public void deleteDuAn(int id) {
         String sql = "DELETE FROM DuAn WHERE id = ?";
@@ -58,4 +58,21 @@ public class DuAnDAO {
             e.printStackTrace();
         }
     }
+
+public void updateDuAn(int id, String tenDuAn, String ngayBatDau, String ngayKetThuc, String moTa) {
+    String sql = "UPDATE du_an SET tenDuAn = ?, ngayBatDau = ?, ngayKetThuc = ?, moTa = ? WHERE id = ?";
+    try (Connection conn = getConnection();
+         PreparedStatement ps = conn.prepareStatement(sql)) {
+        
+        ps.setString(1, tenDuAn);
+        ps.setString(2, ngayBatDau);
+        ps.setString(3, ngayKetThuc);
+        ps.setString(4, moTa);
+        ps.setInt(5, id);
+        
+        ps.executeUpdate();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 }

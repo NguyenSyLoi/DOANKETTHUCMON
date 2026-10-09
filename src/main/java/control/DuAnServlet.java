@@ -40,13 +40,27 @@ public class DuAnServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+        
+        // 1. Đọc tham số action gửi từ Form
+        String action = request.getParameter("action");
+        
         String tenDuAn = request.getParameter("tenDuAn");
         String ngayBatDau = request.getParameter("ngayBatDau");
         String ngayKetThuc = request.getParameter("ngayKetThuc");
         String moTa = request.getParameter("moTa");
 
         DuAnDAO dao = new DuAnDAO();
-        dao.insertDuAn(tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+
+        // 2. Kiểm tra nếu action là "update" thì gọi hàm cập nhật
+        if ("update".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            // LƯU Ý: Hãy đảm bảo trong DuAnDAO của bạn đã có hàm updateDuAn(id, tenDuAn, ngayBatDau, ngayKetThuc, moTa)
+            dao.updateDuAn(id, tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+        } else {
+            // Ngược lại (khi thêm mới), gọi hàm insertDuAn
+            dao.insertDuAn(tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+        }
+
         response.sendRedirect("du-an");
     }
 }

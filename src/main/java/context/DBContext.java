@@ -15,7 +15,7 @@ import java.sql.SQLException;
  */
 public class DBContext {
     private static final String URL 
-            = "jdbc:sqlserver://PC-29\\SQLEXPRESS01:1433;" //DESKTOP-1V4LFQF\MSSQLSERVER01:1433; (server dùng ở nhà) ,//PC-34\\SQLEXPRESS01:1433;(server dùng trên lớp)
+            = "jdbc:sqlserver://PC-29\\SQLEXPRESS01:1433;"
             + "databaseName=QuanLyCongViec;"
             + "encrypt=true;"
             + "trustServerCertificate=true;";
