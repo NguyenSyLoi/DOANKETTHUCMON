@@ -22,6 +22,7 @@ public class DuAnServlet extends HttpServlet {
         String action = request.getParameter("action");
         DuAnDAO dao = new DuAnDAO();
 
+        // Xử lý XÓA
         if ("delete".equals(action)) {
             int id = Integer.parseInt(request.getParameter("id"));
             dao.deleteDuAn(id);
@@ -29,10 +30,17 @@ public class DuAnServlet extends HttpServlet {
             return;
         }
 
+        // Xử lý SỬA: Lấy thông tin dự án cần sửa để đổ lên Form
+        if ("edit".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            // LƯU Ý: Đảm bảo trong DuAnDAO có hàm getDuAnById(int id) trả về 1 đối tượng DuAn
+            DuAn duAnEdit = dao.getDuAnById(id);
+            request.setAttribute("duAnEdit", duAnEdit);
+        }
+
         List<DuAn> list = dao.getAllDuAn();
         request.setAttribute("listDuAn", list);
 
-        // Chuyển hướng đúng đến tên file danhsachduan.jsp
         request.getRequestDispatcher("danhsachduan.jsp").forward(request, response);
     }
 
@@ -40,13 +48,22 @@ public class DuAnServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
+       
+        String action = request.getParameter("action");
         String tenDuAn = request.getParameter("tenDuAn");
         String ngayBatDau = request.getParameter("ngayBatDau");
         String ngayKetThuc = request.getParameter("ngayKetThuc");
         String moTa = request.getParameter("moTa");
 
         DuAnDAO dao = new DuAnDAO();
-        dao.insertDuAn(tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+
+        if ("update".equals(action)) {
+            int id = Integer.parseInt(request.getParameter("id"));
+            dao.updateDuAn(id, tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+        } else {
+            dao.insertDuAn(tenDuAn, ngayBatDau, ngayKetThuc, moTa);
+        }
+
         response.sendRedirect("du-an");
     }
 }

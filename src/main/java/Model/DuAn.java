@@ -22,7 +22,7 @@ public class DuAn {
         this.ngayBatDau = ngayBatDau;
         this.ngayKetThuc = ngayKetThuc;
         this.moTa = moTa;
-        
+       
     }
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }

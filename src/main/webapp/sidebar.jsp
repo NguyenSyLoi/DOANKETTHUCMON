@@ -39,7 +39,7 @@
         </li>
         <!-- 2. Quản lý Nhân viên -->
         <li class="nav-item">
-            <a href="NhanVienServlet" class="nav-link ${param.activePage == 'nhanvien' ? 'active' : ''}">
+            <a href="nhanvien" class="nav-link ${param.activePage == 'nhanvien' ? 'active' : ''}">
                 <i class="bi bi-people-fill fs-5"></i>
                 <span>Quản lý Nhân viên</span>
             </a>
@@ -63,6 +63,13 @@
             <a href="PhanCongServlet" class="nav-link ${param.activePage == 'phancong' ? 'active' : ''}">
                 <i class="bi bi-person-plus-fill fs-5"></i>
                 <span>Phân công công việc</span>
+            </a>
+        </li>
+        <!-- 6. Thống kê công việc -->
+        <li class="nav-item">
+            <a href="thongke" class="nav-link ${param.activePage == 'thongke' ? 'active' : ''}">
+                <i class="bi bi-bar-chart-line-fill fs-5"></i>
+                <span>Thống kê công việc</span>
             </a>
         </li>
     </ul>
