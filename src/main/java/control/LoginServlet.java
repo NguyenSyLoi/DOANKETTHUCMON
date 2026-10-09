@@ -14,7 +14,6 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Truy cập bằng phương thức GET sẽ chuyển về trang đăng nhập
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
@@ -27,18 +26,13 @@ public class LoginServlet extends HttpServlet {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
 
-        // Kiểm tra tài khoản và mật khẩu
         if ("Admin".equals(username) && "123456".equals(password)) {
-            // Đăng nhập thành công -> Lưu session
             HttpSession session = request.getSession();
             session.setAttribute("user", username);
-            
-            // LỰA CHỌN 1: Chuyển hướng trực tiếp tới giao diện Home.jsp
-            response.sendRedirect("Home.jsp");
-            
 
+            // Dùng đúng chữ hoa/thường của file HOME.jsp trong repository.
+            response.sendRedirect(request.getContextPath() + "/HOME.jsp");
         } else {
-            // Đăng nhập thất bại -> Truyền thông báo lỗi và load lại login.jsp
             request.setAttribute("errorMessage", "Tài khoản và mật khẩu của bạn đã sai!");
             request.setAttribute("enteredUser", username);
             request.getRequestDispatcher("login.jsp").forward(request, response);
