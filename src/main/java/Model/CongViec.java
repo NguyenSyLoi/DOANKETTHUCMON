@@ -17,7 +17,6 @@ public class CongViec {
 
     // Thông tin hiển thị
     private String tenDuAn;
-    private String tenNhanVien;
 
     public CongViec() {
     }
@@ -94,13 +93,7 @@ public class CongViec {
 
     public void setTenDuAn(String tenDuAn) {
         this.tenDuAn = tenDuAn;
-    }
+    }  
 
-    public String getTenNhanVien() {
-        return tenNhanVien;
-    }
-
-    public void setTenNhanVien(String tenNhanVien) {
-        this.tenNhanVien = tenNhanVien;
-    }
+   
 }

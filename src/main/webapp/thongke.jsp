@@ -102,7 +102,7 @@
                                 <td class="text-primary">${da.dangLam}</td>
                                 <td class="text-danger fw-bold">${da.quaHan}</td>
                             </tr>
-                        </c:forEach>
+                        </c:forEach>    
                     </tbody>
                 </table>
             </div>
