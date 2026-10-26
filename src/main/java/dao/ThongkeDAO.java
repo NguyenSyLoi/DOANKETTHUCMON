@@ -2,10 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
+
 package dao;
 
-import Model.ThongKe;
+import Model.Thongke;
 import context.DBContext;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -16,89 +18,137 @@ import java.util.Map;
 
 public class ThongkeDAO {
 
-    // 1. Đếm tổng quan số công việc Đã hoàn thành / Đang làm / Quá hạn
-    public Map<String, Integer> getThongKeTongQuan() {
-        Map<String, Integer> map = new HashMap<>();
-        map.put("DaHoanThanh", 0);
-        map.put("DangLam", 0);
-        map.put("QuaHan", 0);
+    // 1. Thống kê tổng quan
+    public Map<String, Integer> getTongQuan() {
+
+        Map<String, Integer> stats = new HashMap<>();
 
         String sql = "SELECT "
-                + " SUM(CASE WHEN trang_thai = N'Đã hoàn thành' THEN 1 ELSE 0 END) AS DaHoanThanh, "
-                + " SUM(CASE WHEN trang_thai = N'Đang làm' AND (han_chat >= GETDATE() OR han_chat IS NULL) THEN 1 ELSE 0 END) AS DangLam, "
-                + " SUM(CASE WHEN trang_thai != N'Đã hoàn thành' AND han_chat < GETDATE() THEN 1 ELSE 0 END) AS QuaHan "
+                + "SUM(CASE WHEN trangThai = N'Hoàn thành' "
+                + "THEN 1 ELSE 0 END) AS DaHoanThanh, "
+
+                + "SUM(CASE WHEN trangThai = N'Đang thực hiện' "
+                + "THEN 1 ELSE 0 END) AS DangLam, "
+
+                + "SUM(CASE WHEN hanHoanThanh < CAST(GETDATE() AS DATE) "
+                + "AND trangThai <> N'Hoàn thành' "
+                + "THEN 1 ELSE 0 END) AS QuaHan "
+
                 + "FROM CongViec";
 
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             if (rs.next()) {
-                map.put("DaHoanThanh", rs.getInt("DaHoanThanh"));
-                map.put("DangLam", rs.getInt("DangLam"));
-                map.put("QuaHan", rs.getInt("QuaHan"));
+                stats.put("DaHoanThanh", rs.getInt("DaHoanThanh"));
+                stats.put("DangLam", rs.getInt("DangLam"));
+                stats.put("QuaHan", rs.getInt("QuaHan"));
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return map;
+
+        return stats;
     }
 
-    // 2. Thống kê theo từng Nhân viên
-    public List<ThongKe> getThongKeTheoNhanVien() {
-        List<ThongKe> list = new ArrayList<>();
-        String sql = "SELECT nv.ma_nv, nv.ten_nv, "
-                + " SUM(CASE WHEN cv.trang_thai = N'Đã hoàn thành' THEN 1 ELSE 0 END) AS DaHoanThanh, "
-                + " SUM(CASE WHEN cv.trang_thai = N'Đang làm' AND (cv.han_chat >= GETDATE() OR cv.han_chat IS NULL) THEN 1 ELSE 0 END) AS DangLam, "
-                + " SUM(CASE WHEN cv.trang_thai != N'Đã hoàn thành' AND cv.han_chat < GETDATE() THEN 1 ELSE 0 END) AS QuaHan "
-                + "FROM NhanVien nv LEFT JOIN CongViec cv ON nv.ma_nv = cv.ma_nv "
-                + "GROUP BY nv.ma_nv, nv.ten_nv";
+    // 2. Thống kê theo nhân viên
+    public List<Thongke> getTheoNhanVien() {
 
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+        List<Thongke> list = new ArrayList<>();
+
+        String sql = "SELECT nv.id, nv.hoTen, "
+
+                + "COUNT(CASE WHEN cv.trangThai = N'Hoàn thành' "
+                + "THEN 1 END) AS DaHoanThanh, "
+
+                + "COUNT(CASE WHEN cv.trangThai = N'Đang thực hiện' "
+                + "THEN 1 END) AS DangLam, "
+
+                + "COUNT(CASE WHEN cv.hanHoanThanh < CAST(GETDATE() AS DATE) "
+                + "AND cv.trangThai <> N'Hoàn thành' "
+                + "THEN 1 END) AS QuaHan "
+
+                + "FROM NhanVien nv "
+
+                + "LEFT JOIN PhanCong pc "
+                + "ON nv.id = pc.NhanVienId "
+
+                + "LEFT JOIN CongViec cv "
+                + "ON pc.CongViecId = cv.id "
+
+                + "GROUP BY nv.id, nv.hoTen "
+                + "ORDER BY nv.id";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                list.add(new ThongKe(
-                        rs.getString("ma_nv"),
-                        rs.getString("ten_nv"),
-                        rs.getInt("DaHoanThanh"),
-                        rs.getInt("DangLam"),
-                        rs.getInt("QuaHan")
-                ));
+                Thongke tk = new Thongke();
+
+                tk.setObjectId(rs.getInt("id"));
+                tk.setObjectName(rs.getString("hoTen"));
+                tk.setDaHoanThanh(rs.getInt("DaHoanThanh"));
+                tk.setDangLam(rs.getInt("DangLam"));
+                tk.setQuaHan(rs.getInt("QuaHan"));
+
+                list.add(tk);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
     }
 
-    // 3. Thống kê theo từng Dự án
-    public List<ThongKe> getThongKeTheoDuAn() {
-        List<ThongKe> list = new ArrayList<>();
-        String sql = "SELECT da.ma_du_an, da.ten_du_an, "
-                + " SUM(CASE WHEN cv.trang_thai = N'Đã hoàn thành' THEN 1 ELSE 0 END) AS DaHoanThanh, "
-                + " SUM(CASE WHEN cv.trang_thai = N'Đang làm' AND (cv.han_chat >= GETDATE() OR cv.han_chat IS NULL) THEN 1 ELSE 0 END) AS DangLam, "
-                + " SUM(CASE WHEN cv.trang_thai != N'Đã hoàn thành' AND cv.han_chat < GETDATE() THEN 1 ELSE 0 END) AS QuaHan "
-                + "FROM DuAn da LEFT JOIN CongViec cv ON da.ma_du_an = cv.ma_du_an "
-                + "GROUP BY da.ma_du_an, da.ten_du_an";
+    // 3. Thống kê theo dự án
+    public List<Thongke> getTheoDuAn() {
 
-        try (Connection conn = new DBContext().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+        List<Thongke> list = new ArrayList<>();
+
+        String sql = "SELECT da.id, da.tenDuAn, "
+
+                + "COUNT(CASE WHEN cv.trangThai = N'Hoàn thành' "
+                + "THEN 1 END) AS DaHoanThanh, "
+
+                + "COUNT(CASE WHEN cv.trangThai = N'Đang thực hiện' "
+                + "THEN 1 END) AS DangLam, "
+
+                + "COUNT(CASE WHEN cv.hanHoanThanh < CAST(GETDATE() AS DATE) "
+                + "AND cv.trangThai <> N'Hoàn thành' "
+                + "THEN 1 END) AS QuaHan "
+
+                + "FROM DuAn da "
+
+                + "LEFT JOIN CongViec cv "
+                + "ON da.id = cv.MaDuAn "
+
+                + "GROUP BY da.id, da.tenDuAn "
+                + "ORDER BY da.id";
+
+        try (Connection con = DBContext.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
-                list.add(new ThongKe(
-                        rs.getString("ma_du_an"),
-                        rs.getString("ten_du_an"),
-                        rs.getInt("DaHoanThanh"),
-                        rs.getInt("DangLam"),
-                        rs.getInt("QuaHan")
-                ));
+                Thongke tk = new Thongke();
+
+                tk.setObjectId(rs.getInt("id"));
+                tk.setObjectName(rs.getString("tenDuAn"));
+                tk.setDaHoanThanh(rs.getInt("DaHoanThanh"));
+                tk.setDangLam(rs.getInt("DangLam"));
+                tk.setQuaHan(rs.getInt("QuaHan"));
+
+                list.add(tk);
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return list;
     }
 }
